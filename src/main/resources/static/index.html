@@ -47,6 +47,7 @@
 <canvas id="myChart"></canvas>
 <script>
     let ischart;
+    let previousCurrency;
     document.addEventListener('DOMContentLoaded', function () {
         fetch('http://localhost:8085/api/currencies')
             .then(response => response.json())
@@ -66,6 +67,10 @@
         const currency = document.getElementById('currency').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
+        if (new Date(startDate) >= new Date(endDate)) {
+            alert('Дата от должна быть меньше даты до');
+            return;
+        }
 
         fetch(`http://localhost:8085/api/rate/dynamics`, {
             method: 'POST',
@@ -100,9 +105,11 @@
                         }]
                     }
                 });
+                previousCurrency = currency;
             })
             .catch(error => {
                 alert(error.message);
+                document.getElementById('currency').value = previousCurrency;
             })
     });
 
