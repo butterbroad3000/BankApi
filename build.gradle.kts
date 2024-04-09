@@ -20,15 +20,20 @@ configurations {
 repositories {
     mavenCentral()
 }
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
+    }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
