@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>Rates</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #dataForm {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #dataForm label {
+            margin-top: 10px;
+        }
+        #dataForm button {
+            background-color: lightblue;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 <form id="dataForm">
@@ -22,7 +37,7 @@
 <div id="graph"></div>
 <canvas id="myChart"></canvas>
 <script>
-    // Ваш JavaScript-код
+    let ischart;
     document.getElementById('dataForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -43,9 +58,11 @@
         })
             .then(response => response.json())
             .then(data => {
-                // Отобразите данные на графике
                 const ctx = document.getElementById('myChart').getContext('2d');
-                new Chart(ctx, {
+                if (ischart) {
+                    ischart.destroy();
+                }
+               ischart= new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: data.map(item => item.Date),
@@ -53,7 +70,7 @@
                             label: 'Курс валюты',
                             data: data.map(item => item.Cur_OfficialRate),
                             fill: false,
-                            borderColor: 'rgb(75, 192, 192)',
+                            borderColor: 'red',
                             tension: 0.1
                         }]
                     }
