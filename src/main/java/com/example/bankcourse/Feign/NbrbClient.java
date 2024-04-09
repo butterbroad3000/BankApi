@@ -12,12 +12,12 @@ import java.util.List;
 
 @FeignClient(name = "nbrbClient", url = "${api.url}")
 public interface NbrbClient {
-  @GetMapping("/exrates/currencies")
+  @GetMapping("/currencies")
   List<Currency> getCurrencies();
 
-  @GetMapping("/exrates/rates/{cur_id}")
+  @GetMapping("/rates/{cur_id}")
   Rate getRate(@PathVariable("cur_id") int curId);
 
-  @GetMapping("/exrates/rates/dynamics/{cur_id}")
+  @GetMapping("/rates/dynamics/{cur_id}")
   List<Rate> getRateDynamics(@PathVariable("cur_id") int curId, @RequestParam("startdate") String startDate, @RequestParam("enddate") String endDate);
 }
