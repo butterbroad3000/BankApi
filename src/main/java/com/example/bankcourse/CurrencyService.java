@@ -35,4 +35,7 @@ public class CurrencyService {
 
     return rates;
   }
+  public List<Currency> getCurrencies(){
+    return nbrbClient.getCurrencies();
+  }
 }

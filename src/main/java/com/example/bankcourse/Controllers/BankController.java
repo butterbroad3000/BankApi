@@ -1,6 +1,7 @@
 package com.example.bankcourse.Controllers;
 
 import com.example.bankcourse.CurrencyService;
+import com.example.bankcourse.Models.Currency;
 import com.example.bankcourse.Models.Rate;
 import com.example.bankcourse.Models.Request.RateDynamicsRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,10 @@ public class BankController {
   @PostMapping("rate/dynamics")
   public List<Rate> getRateDynamics(@RequestBody RateDynamicsRequest request) {
     return currencyService.getRateDynamics(request);
+  }
+  @GetMapping("/currencies")
+  public List<Currency> getCurrencies(){
+    return currencyService.getCurrencies();
   }
 }
 

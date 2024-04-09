@@ -11,19 +11,28 @@
             max-width: 600px;
             margin: 0 auto;
         }
+
         #dataForm label {
             margin-top: 10px;
         }
+
         #dataForm button {
             background-color: lightblue;
             color: white;
+        }
+
+        @media (max-width: 600px) {
+            #dataForm {
+                max-width: 100%;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
 <form id="dataForm">
     <label for="currency">Валюта:</label>
-    <input type="text" id="currency" name="currency">
+    <select name="currency" id="currency"></select>
 
     <label for="startDate">Дата от:</label>
     <input type="date" id="startDate" name="startDate">
@@ -38,7 +47,20 @@
 <canvas id="myChart"></canvas>
 <script>
     let ischart;
-    document.getElementById('dataForm').addEventListener('submit', function(event) {
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('http://localhost:8085/api/currencies')
+            .then(response => response.json())
+            .then(currencies => {
+                const select = document.getElementById('currency');
+                currencies.forEach(currency => {
+                    const option = document.createElement('option');
+                    option.value = currency.Cur_Abbreviation;
+                    option.text = currency.Cur_Abbreviation.toString();
+                    select.appendChild(option);
+                });
+            });
+    });
+    document.getElementById('dataForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
         const currency = document.getElementById('currency').value;
@@ -58,11 +80,14 @@
         })
             .then(response => response.json())
             .then(data => {
+                if (data.length === 0) {
+                    throw new Error('Данные для выбранной валюты недоступны за выбранный период времени');
+                }
                 const ctx = document.getElementById('myChart').getContext('2d');
                 if (ischart) {
                     ischart.destroy();
                 }
-               ischart= new Chart(ctx, {
+                ischart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: data.map(item => item.Date),
@@ -75,8 +100,12 @@
                         }]
                     }
                 });
-            });
+            })
+            .catch(error => {
+                alert(error.message);
+            })
     });
+
 </script>
 </body>
 </html>
