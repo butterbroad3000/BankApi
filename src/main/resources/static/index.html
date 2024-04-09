@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rates</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<form id="dataForm">
+    <label for="currency">Валюта:</label>
+    <input type="text" id="currency" name="currency">
+
+    <label for="startDate">Дата от:</label>
+    <input type="date" id="startDate" name="startDate">
+
+    <label for="endDate">Дата до:</label>
+    <input type="date" id="endDate" name="endDate">
+
+    <button type="submit">Выполнить</button>
+</form>
+
+<div id="graph"></div>
+<canvas id="myChart"></canvas>
+<script>
+    // Ваш JavaScript-код
+    document.getElementById('dataForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const currency = document.getElementById('currency').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        fetch(`http://localhost:8085/api/rate/dynamics`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                currencyAbbreviation: currency,
+                startDate: startDate,
+                endDate: endDate
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Отобразите данные на графике
+                const ctx = document.getElementById('myChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(item => item.Date),
+                        datasets: [{
+                            label: 'Курс валюты',
+                            data: data.map(item => item.Cur_OfficialRate),
+                            fill: false,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    }
+                });
+            });
+    });
+</script>
+</body>
+</html>
