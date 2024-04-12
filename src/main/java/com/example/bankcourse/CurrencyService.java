@@ -16,7 +16,7 @@ public class CurrencyService {
 
   public List<Rate> getRateDynamics(RateDynamicsRequest request) {
 
-    List<Currency> currencies = nbrbClient.getCurrencies();
+    List<Currency> currencies = getCurrencies();
 
     Currency currency = currencies.stream()
       .filter(c -> c.Cur_Abbreviation().equals(request.currencyAbbreviation()))
