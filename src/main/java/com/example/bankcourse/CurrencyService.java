@@ -6,7 +6,11 @@ import com.example.bankcourse.Models.Rate;
 import com.example.bankcourse.Models.Request.RateDynamicsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -14,28 +18,33 @@ import java.util.List;
 public class CurrencyService {
   private final NbrbClient nbrbClient;
 
-  public List<Rate> getRateDynamics(RateDynamicsRequest request) {
+  public List<Rate> getRateDynamics(RateDynamicsRequest request) throws ParseException {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    Date startDate = format.parse(request.startDate());
+    Date endDate = format.parse(request.endDate());
 
-    List<Currency> currencies = getCurrencies();
-
-    Currency currency = currencies.stream()
-      .filter(c -> c.Cur_Abbreviation().equals(request.currencyAbbreviation()))
-      .findFirst()
-      .orElseThrow(() -> new IllegalArgumentException("No such currency abbreviation: " + request.currencyAbbreviation()));
-
-    List<Currency> relevantCurrencies = currencies.stream()
-      .filter(c -> c.Cur_ParentID() == currency.Cur_ID())
-      .toList();
-
+    List<Currency> currenciesByAbb = getCurrenciesByAbbreviation(request.currencyAbbreviation());
     List<Rate> rates = new ArrayList<>();
 
-    for (Currency relevantCurrency : relevantCurrencies) {
-      rates.addAll(nbrbClient.getRateDynamics(relevantCurrency.Cur_ID(), request.startDate(), request.endDate()));
+    for (Currency currency : currenciesByAbb) {
+      if (currency.Cur_DateStart().before(startDate) && currency.Cur_DateEnd().after(endDate)) {
+        rates.addAll(nbrbClient.getRateDynamics(currency.Cur_ID(), request.startDate(), request.endDate()));
+      }
     }
 
     return rates;
   }
-  public List<Currency> getCurrencies(){
+
+  public List<Currency> getCurrencies() {
     return nbrbClient.getCurrencies();
+  }
+
+  public List<Currency> getCurrenciesByAbbreviation(String abb) {
+    List<Currency> currencies = getCurrencies();
+
+    return
+      currencies.stream()
+        .filter(currency -> currency.Cur_Abbreviation().equals(abb))
+        .toList();
   }
 }
