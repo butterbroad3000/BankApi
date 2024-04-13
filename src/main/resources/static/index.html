@@ -61,14 +61,29 @@
                 });
             });
     });
+
+    function validateDateRange(startDate, endDate) {
+        var start = new Date(startDate);
+        var end = new Date(endDate);
+        var diff = end - start;
+        var diffDays = diff / (1000 * 60 * 60 * 24);
+
+        if (diffDays > 365) {
+            alert("Разница между датами не должна превышать 365 дней");
+            return false;
+        }
+
+        return true;
+    }
+
     document.getElementById('dataForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
         const currency = document.getElementById('currency').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-        if (new Date(startDate) >= new Date(endDate)) {
-            alert('Дата от должна быть меньше даты до');
+
+        if (!validateDateRange(startDate, endDate)) {
             return;
         }
 
