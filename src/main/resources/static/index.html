@@ -60,6 +60,8 @@
                     select.appendChild(option);
                 });
             });
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('endDate').setAttribute('max', today);
     });
 
     function validateDateRange(startDate, endDate) {
