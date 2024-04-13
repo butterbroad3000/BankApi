@@ -30,6 +30,7 @@ public class CurrencyService {
         .filter(currency -> currency.Cur_Abbreviation().equals(abb))
         .toList();
   }
+
   public List<Rate> getRateDynamics(RateDynamicsRequest request) throws ParseException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     Date startDate = format.parse(request.startDate());
